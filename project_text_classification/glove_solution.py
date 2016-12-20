@@ -7,7 +7,7 @@ import random
 
 def main():
     print("loading cooccurrence matrix")
-    with open('./data/cooc.pkl', 'rb') as f:
+    with open('./cooc.pkl', 'rb') as f:
         cooc = pickle.load(f)
     print("{} nonzero entries".format(cooc.nnz))
 
@@ -31,6 +31,8 @@ def main():
             fn = min(1.0, (n / nmax) ** alpha)
             x, y = xs[ix, :], ys[jy, :]
             scale = 2 * eta * fn * (logn - np.dot(x, y))
+            mse_n = (scale/2)**2/(fn*eta)
+            mse += mse_n
             xs[ix, :] += scale * y
             ys[jy, :] += scale * x
     np.save('./data/embeddings', xs)

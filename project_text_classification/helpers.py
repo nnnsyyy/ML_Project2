@@ -21,15 +21,29 @@ def sentence_metrix(path,vocab,embed_word_metrix):
     for fn in [path]:
         with open(fn) as f:
             for line in f:
-                word_num=1
+                word_num=0
                 sentence_vector = np.zeros(20)
                 for t in line.strip().split(): 
                     if(vocab.get(t)!=None):
                         sentence_vector +=embed_word_metrix[vocab.get(t)-1,:]
                         word_num+=1
-                sentence_vector = sentence_vector/word_num
+                if(word_num!=0):
+                    sentence_vector = sentence_vector/word_num
+                else:
+                    sentence_vector = np.zeros(20)  
                 sentence_metrix.append(sentence_vector)
     return sentence_metrix
+
+def build_train(vocab,embed_word_metrix):
+    s_metrix_pos = sentence_metrix("./twitter-datasets/train_pos.txt", vocab,embed_word_metrix)
+    s_metrix_neg = sentence_metrix("./twitter-datasets/train_neg.txt",vocab,embed_word_metrix)
+    s_metrix_pos = np.asarray(s_metrix_pos)
+    s_metrix_neg = np.asarray(s_metrix_neg)
+    s_metrix_pos = np.insert(s_metrix_pos,0,1,axis = 1)
+    s_metrix_neg = np.insert(s_metrix_neg,0,-1,axis = 1)
+    s_me = np.concatenate((s_metrix_pos,s_metrix_neg))
+    return s_me
+
 
 def build_sample(train_all, size):
     train_sample = train_all[np.random.randint(train_all.shape[0],size = size),:]

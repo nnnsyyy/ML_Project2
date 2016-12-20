@@ -11,7 +11,7 @@ def main():
         cooc = pickle.load(f)
     print("{} nonzero entries".format(cooc.nnz))
 
-    nmax = 100
+    nmax = cooc.max()
     print("using nmax =", nmax, ", cooc.max() =", cooc.max())
 
     print("initializing embeddings")
@@ -25,12 +25,23 @@ def main():
     epochs = 10
 
     for epoch in range(epochs):
-        print("epoch {}".format(epoch))
+        mse = 0
+        grad_xs = np.zeros((cooc.shape[0], embedding_dim))
+        grad_ys = np.zeros((cooc.shape[1], embedding_dim))
+        gamma = 10/int(1+epoch/20)
+        print("epoch {}".format(epoch)+"gamma {}".format(gamma))
         for ix, jy, n in zip(cooc.row, cooc.col, cooc.data):
-
-			# fill in your SGD code here, 
-			# for the update resulting from co-occurence (i,j)
-		
+            logn = np.log(n)
+            fn = min(1.0, (n / nmax) ** alpha)
+            x, y = xs[ix, :], ys[jy, :]
+            scale = 2 * eta * fn * (logn - np.dot(x, y))
+            mse_n = (scale/2)**2/(fn*eta)
+            mse += mse_n
+            grad_xs[ix,:] += -scale * y
+            grad_ys[jy,:] += -scale * x
+        print("mse {}".format(mse))
+        xs += -gamma * grad_xs
+        ys += -gamma * grad_ys
 
     np.save('embeddings', xs)
 
