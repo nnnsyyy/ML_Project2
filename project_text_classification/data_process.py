@@ -8,10 +8,10 @@ from nltk.stem import WordNetLemmatizer
 
 
 def main():
-    d = path.dirname('E:/2016-2017fall/pcml/projects/ML_Project2_nsy/')
-    doc_name = "./twitter-datasets/test_data"
-    text = open(path.join(d+doc_name+'.txt'))
-    text1 = open(path.join(d+doc_name+'_.txt'),'w')
+    #d = path.dirname('E:/2016-2017fall/pcml/projects/ML_Project2_nsy/')
+    #doc_name = input('your path')
+    text = open('./newdata/vocab_cut.txt')
+    text1 = open(('./newdata/vocab_cut_.txt'),'w')
     
     s = text.readline()
     while(s):
@@ -34,7 +34,9 @@ def main():
         lemmatizer = WordNetLemmatizer()
         lemmatized_content = [lemmatizer.lemmatize(word) for word in stemmed_content]
         word = " ".join(lemmatized_content)
-        text1.write(word+'\r\n')
+        if(len(word)!=0):
+            text1.write(word+'\n')
+            print(len(word))
         s = text.readline()
 
 if __name__ == '__main__':

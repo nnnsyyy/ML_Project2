@@ -35,8 +35,8 @@ def sentence_metrix(path,vocab,embed_word_metrix):
     return sentence_metrix
 
 def build_train(vocab,embed_word_metrix):
-    s_metrix_pos = sentence_metrix("./twitter-datasets/train_pos.txt", vocab,embed_word_metrix)
-    s_metrix_neg = sentence_metrix("./twitter-datasets/train_neg.txt",vocab,embed_word_metrix)
+    s_metrix_pos = sentence_metrix("./twitter-datasets/train_pos_full_.txt", vocab,embed_word_metrix)
+    s_metrix_neg = sentence_metrix("./twitter-datasets/train_neg_full_.txt",vocab,embed_word_metrix)
     s_metrix_pos = np.asarray(s_metrix_pos)
     s_metrix_neg = np.asarray(s_metrix_neg)
     s_metrix_pos = np.insert(s_metrix_pos,0,1,axis = 1)
@@ -44,9 +44,14 @@ def build_train(vocab,embed_word_metrix):
     s_me = np.concatenate((s_metrix_pos,s_metrix_neg))
     return s_me
 
+def build_test(vocab,embed_word_metrix):
+    s_me_test = sentence_metrix("./twitter-datasets/test_data_.txt",vocab,embed_word_metrix)
+    s_me_test = np.asarray(s_me_test)
+    return s_me_test
+
 
 def build_sample(train_all, size):
-    train_sample = train_all[np.random.randint(train_all.shape[0],size = size),:]
-    y_train_sample = train_sample[:,0]
-    x_train_sample = np.delete(train_sample,0,axis=1)
+    #train_sample = train_all[np.random.randint(train_all.shape[0],size = size),:]
+    y_train_sample = train_all[:,0]
+    x_train_sample = np.delete(train_all,0,axis=1)
     return x_train_sample,y_train_sample
