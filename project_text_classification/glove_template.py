@@ -7,7 +7,7 @@ import random
 
 def main():
     print("loading cooccurrence matrix")
-    with open('cooc.pkl', 'rb') as f:
+    with open('./newdata/cooc.pkl', 'rb') as f:
         cooc = pickle.load(f)
     print("{} nonzero entries".format(cooc.nnz))
 
@@ -15,20 +15,25 @@ def main():
     print("using nmax =", nmax, ", cooc.max() =", cooc.max())
 
     print("initializing embeddings")
-    embedding_dim = 20
+    embedding_dim = 50
     xs = np.random.normal(size=(cooc.shape[0], embedding_dim))
     ys = np.random.normal(size=(cooc.shape[1], embedding_dim))
 
     eta = 0.001
     alpha = 3 / 4
 
-    epochs = 10
+    epochs = 100
+	gamma = 20
+	
+	min_mse=150
+    mse = 0
+	best_xs = np.zeros((cooc.shape[0], embedding_dim))
 
-    for epoch in range(epochs):
-        mse = 0
+    for epoch in range(1,epochs+1):
+		pre_mse = mse
         grad_xs = np.zeros((cooc.shape[0], embedding_dim))
         grad_ys = np.zeros((cooc.shape[1], embedding_dim))
-        gamma = 10/int(1+epoch/20)
+				
         print("epoch {}".format(epoch)+"gamma {}".format(gamma))
         for ix, jy, n in zip(cooc.row, cooc.col, cooc.data):
             logn = np.log(n)
@@ -42,8 +47,19 @@ def main():
         print("mse {}".format(mse))
         xs += -gamma * grad_xs
         ys += -gamma * grad_ys
-
-    np.save('embeddings', xs)
+		
+        if(epochs>10):
+		    gamma = gamma*(1-1/(1+epoch*0.5))
+            if(mse-min_mse > 10 or abs(pre_mse-mse) < 0.05):
+                break
+            else:
+			    if(min_mse > mse):
+			        min_mse = mse
+				    best_xs = xs
+                
+	print("best gamma {}".format(gamma))
+    print("min_mse {}".format(min_mse))
+    np.save('./newdata/embeddings', best_xs)
 
 
 if __name__ == '__main__':
