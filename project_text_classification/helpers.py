@@ -52,8 +52,8 @@ def build_test(vocab,embed_word_metrix):
 
 def build_sample(train_all, size):
     train_sample = train_all[np.random.randint(train_all.shape[0],size = size),:]
-    y_train_sample = train_all[:,0]
-    x_train_sample = np.delete(train_all,0,axis=1)
+    y_train_sample = train_sample[:,0]
+    x_train_sample = np.delete(train_sample,0,axis=1)
     return x_train_sample,y_train_sample
 
 def normallize(metrix):
